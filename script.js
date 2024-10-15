@@ -22,3 +22,6 @@
 // units places / docenten
 // gems 
 //  damage done
+// starts knop dat je in de game komt en begint 
+// knop met login om in je acount te komen
+// knop met exit om de game af te sluiten

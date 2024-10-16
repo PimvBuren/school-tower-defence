@@ -210,3 +210,5 @@ document.getElementById('tower1').addEventListener('click', function() {
 // starts knop dat je in de game komt en begint 
 // knop met login om in je acount te komen
 // knop met exit om de game af te sluiten
+
+// hoe gaat het

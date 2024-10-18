@@ -6,10 +6,21 @@ const tile = 25;
 var bgcolor = "green";
 
 var leerlingImg1 = new Image();
+<<<<<<< HEAD
 leerlingImg1.src = 'img/1729083142124.png';
 
 var leerlingImg2 = new Image();
 leerlingImg2.src = 'img/1729083160198.png';
+=======
+leerlingImg1.src = '1729083142124.png';
+leerlingImg1.onload = () => console.log("Image 1 loaded successfully");
+leerlingImg1.onerror = () => console.error("Failed to load Image 1");
+
+var leerlingImg2 = new Image();
+leerlingImg2.src = '1729083160198.png';
+leerlingImg2.onload = () => console.log("Image 2 loaded successfully");
+leerlingImg2.onerror = () => console.error("Failed to load Image 2");
+>>>>>>> 76d3ff2026f8025bb0016dc35b9800f498019163
 
 class Leerling {
     constructor(pos, img, r, health, attack) {
@@ -52,7 +63,7 @@ class Leerling {
     }
 
     render() {
-        if (this.img.complete) {
+        if (this.img.complete && this.img.naturalWidth > 0) {
             ctx.drawImage(this.img, this.pos.x - this.r, this.pos.y - this.r, this.r * 2, this.r * 2);
         } else {
             ctx.fillStyle = "blue";
@@ -203,6 +214,10 @@ document.getElementById('tower1').addEventListener('click', function() {
 });
 
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 76d3ff2026f8025bb0016dc35b9800f498019163
 // hier komt de coin system te staan
 // hier komen de healh bar te staan van het hek 
 // hier komt de damage van de docent te staan hoeveel ze aanrichten
@@ -228,5 +243,9 @@ document.getElementById('tower1').addEventListener('click', function() {
 // starts knop dat je in de game komt en begint 
 // knop met login om in je acount te komen
 // knop met exit om de game af te sluiten
+<<<<<<< HEAD
 // hier komt de start functie 
 // hier kommen de verschilende pagina's
+=======
+
+>>>>>>> 76d3ff2026f8025bb0016dc35b9800f498019163

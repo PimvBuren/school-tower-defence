@@ -6,7 +6,7 @@
 <title>Place a Tower</title>
 <!-- dit kopelt het met css -->
 <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
-
+ 
 <!-- dit is de style van de map voor de achtergrond -->
 <style>
         canvas {
@@ -26,25 +26,32 @@
         }
         /* als je de tower pakt dan kleurt die rood */
         .tower-icon.selected {
-            border-color: red; 
+            border-color: red;
         }
     </style>
 </head>
 <body>
-
-<!-- inlog scherm -->
-<div class="fixed text-white text-sm ml-2 mt-1 select-none">
-    <div>
+<!-- health bar -->
+ <footer>
+ <h1>health</h1>
+ <progress value="100" max="100" id="health"></progress>
+ </footer>
+ 
+ <button onclick="attackenemy()">attackenemy</button>
+ 
+ 
+ 
+ 
+ 
     </div>
 </div>
-
+ 
 <!-- canvas -->
-<canvas id="myCanvas" width="800" height="600"></canvas>
-
+ 
  
     <canvas id="myCanvas" width="1900" height="850"></canvas>
  
-
+ 
 <script src="script.js"></script>
 </body>
 </html>

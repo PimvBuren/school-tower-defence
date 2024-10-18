@@ -6,10 +6,14 @@ const tile = 25;
 var bgcolor = "green";
 
 var leerlingImg1 = new Image();
-leerlingImg1.src = 'img/1729083142124.png';
+leerlingImg1.src = '1729083142124.png';
+leerlingImg1.onload = () => console.log("Image 1 loaded successfully");
+leerlingImg1.onerror = () => console.error("Failed to load Image 1");
 
 var leerlingImg2 = new Image();
-leerlingImg2.src = 'img/1729083160198.png';
+leerlingImg2.src = '1729083160198.png';
+leerlingImg2.onload = () => console.log("Image 2 loaded successfully");
+leerlingImg2.onerror = () => console.error("Failed to load Image 2");
 
 class Leerling {
     constructor(pos, img, r, health, attack) {
@@ -52,7 +56,7 @@ class Leerling {
     }
 
     render() {
-        if (this.img.complete) {
+        if (this.img.complete && this.img.naturalWidth > 0) {
             ctx.drawImage(this.img, this.pos.x - this.r, this.pos.y - this.r, this.r * 2, this.r * 2);
         } else {
             ctx.fillStyle = "blue";
@@ -201,6 +205,7 @@ document.getElementById('tower1').addEventListener('click', function() {
     selectedTower = 'basicTower';
     document.getElementById('tower1').classList.add('selected');
 });
+
 
 
 // hier komt de coin system te staan

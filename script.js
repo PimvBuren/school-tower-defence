@@ -12,11 +12,11 @@ class Leerling {
         this.r = r;
         this.health = health;
         this.attack = attack;
-        this.currentTargetIndex = 0;
+        this.currentTargetlevel1 = 0;
         this.speed = 2;
         this.minTargetDist = 2;
         this.targets = this.calculateTargets();
-        this.currentTarget = this.targets[this.currentTargetIndex];
+        this.currentTarget = this.targets[this.currentTargetlevel1];
     }
 
     calculateTargets() {
@@ -35,8 +35,8 @@ class Leerling {
         let dir = new Vector(this.currentTarget.x - this.pos.x, this.currentTarget.y - this.pos.y);
         let distance = Math.sqrt(dir.x ** 2 + dir.y ** 2);
         if (distance < this.minTargetDist) {
-            this.currentTargetIndex++;
-            this.currentTarget = this.currentTargetIndex < this.targets.length ? this.targets[this.currentTargetIndex] : null;
+            this.currentTargetlevel1++;
+            this.currentTarget = this.currentTargetlevel1 < this.targets.length ? this.targets[this.currentTargetlevel1] : null;
         } else {
             dir.x /= distance;
             dir.y /= distance;
@@ -98,7 +98,7 @@ function renderPath() {
     let drawPos = new Vector(startPos.x, startPos.y);
     ctx.fillStyle = "brown";
     
-    pathData.forEach((path, index) => {
+    pathData.forEach((path, level1) => {
         let x = drawPos.x;
         let y = drawPos.y;
         let w = Math.abs(path.x);

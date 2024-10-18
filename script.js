@@ -4,13 +4,13 @@ const sw = canvas.width;
 const sh = canvas.height;
 const tile = 25;
 var bgcolor = "green";
- 
+
 var leerlingImg1 = new Image();
 leerlingImg1.src = 'img/1729083142124.png';
- 
+
 var leerlingImg2 = new Image();
 leerlingImg2.src = 'img/1729083160198.png';
- 
+
 class Leerling {
     constructor(pos, img, r, health, attack) {
         this.pos = pos;
@@ -24,7 +24,7 @@ class Leerling {
         this.targets = this.calculateTargets();
         this.currentTarget = this.targets[this.currentTargetIndex];
     }
- 
+
     calculateTargets() {
         let targets = [];
         let drawPos = new Vector(startPos.x, startPos.y);
@@ -35,7 +35,7 @@ class Leerling {
         }
         return targets;
     }
- 
+
     update() {
         if (this.currentTarget == null) return;
         let dir = new Vector(this.currentTarget.x - this.pos.x, this.currentTarget.y - this.pos.y);
@@ -50,7 +50,7 @@ class Leerling {
             this.pos.y += dir.y * this.speed;
         }
     }
- 
+
     render() {
         if (this.img.complete) {
             ctx.drawImage(this.img, this.pos.x - this.r, this.pos.y - this.r, this.r * 2, this.r * 2);
@@ -62,28 +62,28 @@ class Leerling {
         }
     }
 }
- 
+
 class Vector {
     constructor(x, y) {
         this.x = x;
         this.y = y;
     }
 }
- 
-var startPos = new Vector(0, 300);
+
+var startPos = new Vector(0, 625);
 var pathData = [
     new Vector(200, 0),
-    new Vector(0, -200),
-    new Vector(200, 0),
+    new Vector(0, -400),
+    new Vector(400, 0),
     new Vector(0, 300),
     new Vector(200, 0),
     new Vector(0, -100),
     new Vector(400, 0),
 ];
- 
+
 let leerlingen = [];
-const NUM_leerlingen = 10;
- 
+const NUM_leerlingen = 100;
+
 function spawnLeerlingen() {
     for (let i = 0; i < NUM_leerlingen; i++) {
         setTimeout(() => {
@@ -93,33 +93,35 @@ function spawnLeerlingen() {
         }, i * 1000);
     }
 }
- 
+
 spawnLeerlingen();
- 
+
 function update() {
     leerlingen.forEach(l => l.update());
 }
- 
+
 function renderPath() {
     let drawPos = new Vector(startPos.x, startPos.y);
     ctx.fillStyle = "brown";
+    
     pathData.forEach((path, index) => {
         let x = drawPos.x;
         let y = drawPos.y;
         let w = Math.abs(path.x);
         let h = Math.abs(path.y);
+        
         if (path.x !== 0) {
             ctx.fillRect(x, y - tile, w, tile * 2);
         } else {
             ctx.fillRect(x - tile, y + (path.y > 0 ? 0 : path.y), tile * 2, h);
         }
- 
+
         ctx.fillRect(x - tile, y - tile, tile * 2, tile * 2);
         drawPos.x += path.x;
         drawPos.y += path.y;
     });
 }
- 
+
 function renderGrid() {
     ctx.fillStyle = "black";
     let x = 0;
@@ -139,7 +141,7 @@ function renderGrid() {
         y += tile;
     }
 }
- 
+
 function render() {
     ctx.fillStyle = bgcolor;
     ctx.fillRect(0, 0, sw, sh);
@@ -147,24 +149,24 @@ function render() {
     renderGrid();
     leerlingen.forEach(l => l.render());
 }
- 
+
 function play() {
     update();
     render();
 }
- 
+
 setInterval(play, 1000 / 60);
- 
+
 const towers = [];
 let selectedTower = null;
- 
+
 class Tower {
     constructor(x, y) {
         this.x = x;
         this.y = y;
         this.radius = 20;
     }
- 
+
     draw() {
         ctx.fillStyle = 'green';
         ctx.beginPath();
@@ -172,7 +174,7 @@ class Tower {
         ctx.fill();
     }
 }
- 
+
 function placeTower(x, y) {
     if (selectedTower) {
         towers.push(new Tower(x, y));
@@ -181,11 +183,11 @@ function placeTower(x, y) {
         document.getElementById('tower1').classList.remove('selected');
     }
 }
- 
+
 function drawTowers() {
     towers.forEach(tower => tower.draw());
 }
- 
+
 canvas.addEventListener('click', function(event) {
     if (selectedTower) {
         const rect = canvas.getBoundingClientRect();
@@ -194,13 +196,13 @@ canvas.addEventListener('click', function(event) {
         placeTower(mouseX, mouseY);
     }
 });
- 
+
 document.getElementById('tower1').addEventListener('click', function() {
     selectedTower = 'basicTower';
     document.getElementById('tower1').classList.add('selected');
 });
- 
- 
+
+
 // hier komt de coin system te staan
 // hier komen de healh bar te staan van het hek 
 // hier komt de damage van de docent te staan hoeveel ze aanrichten
@@ -210,7 +212,7 @@ document.getElementById('tower1').addEventListener('click', function() {
 // hier komt te staan dat elke ronde ze sterker worden
 // hier komt te staan dat je op het docent kan klikken en upgraden docent 1
 // hier komt ook het docent slepen
-// hier komt te staan dat je op het docent kan klikken en upgraden docent 2
+// hier komt te staan dat je op het docent kan klikken en upgradeßßn docent 2
 // hier komt ook het docent slepen
 // hier komt de mini boss 1 te staan die bij wave 10 komt
 // special ability snelheid
@@ -226,3 +228,5 @@ document.getElementById('tower1').addEventListener('click', function() {
 // starts knop dat je in de game komt en begint 
 // knop met login om in je acount te komen
 // knop met exit om de game af te sluiten
+// hier komt de start functie 
+// hier kommen de verschilende pagina's

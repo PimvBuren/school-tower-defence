@@ -1,19 +1,45 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // Verkrijg het canvas-element en de 2D tekencontext
     var canvas = document.getElementById("myCanvas");
     var ctx = canvas.getContext("2d");
 
-    // Basisinstellingen voor het canvas
     const sw = canvas.width; // Breedte van het canvas
     const sh = canvas.height; // Hoogte van het canvas
-    const tile = 25; // Grootte van de grid (25 pixels)
+    const tile = 25; // Grootte van het raster
     var bgcolor = "green"; // Achtergrondkleur van het canvas
 
-    // Stel het lettertype in en geef de tekst "wave 1" weer
-    ctx.font = "50px Arial";
-    ctx.fillText("wave 1", 300, 800);
+    // Afbeeldingen voor leerlingen
+    var tijnImg = new Image();
+    var alemImg = new Image();
+    var milanImg = new Image();
+    var ivoImg = new Image();
+    var straImg = new Image();
 
-    // Vector klasse voor 2D-coördinaten
+    let imagesLoaded = 0;  // Teller om bij te houden of alle afbeeldingen zijn geladen
+
+    // Controleer of alle afbeeldingen zijn geladen
+    function checkImagesLoaded() {
+        imagesLoaded++;
+        if (imagesLoaded === 5) { // Aantal afbeeldingen
+            // Alle afbeeldingen zijn geladen, start nu de game-logica
+            update();
+        }
+    }
+
+    // Stel de bron van de afbeeldingen in
+    tijnImg.src = 'img/tijn.png'; 
+    alemImg.src = 'img/alem.png'; 
+    milanImg.src = 'img/milan.png';
+    ivoImg.src = 'img/ivo.png';
+    straImg.src = 'img/stra.png';
+
+    // Voeg een onload-eventlistener toe voor elke afbeelding
+    tijnImg.onload = checkImagesLoaded;
+    alemImg.onload = checkImagesLoaded;
+    milanImg.onload = checkImagesLoaded;
+    ivoImg.onload = checkImagesLoaded;
+    straImg.onload = checkImagesLoaded;
+
+    // Klassen definities
     class Vector {
         constructor(x, y) {
             this.x = x; // x-coördinaat
@@ -21,234 +47,322 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Leerling klasse
     class Leerling {
-        constructor(pos, r, health, attack) {
+        constructor(pos, r, health, attack, image) {
             this.pos = pos; // Positie van de leerling
             this.r = r; // Straal van de leerling
             this.health = health; // Gezondheid van de leerling
-            this.attack = attack; // Aanvalskracht van de leerling
-            this.currentTargetIndex = 0; // Index van het huidige doel
+            this.attack = attack; // Aanvalssterkte van de leerling
+            this.image = image; // Afbeelding van de leerling
+            this.currentTargetIndex = 0; // Index van het huidige doelwit
             this.speed = 2; // Snelheid van de leerling
-            this.minTargetDist = 2; // Minimale afstand tot het doel
-            this.targets = this.calculateTargets(); // Bereken de doelen
-            this.currentTarget = this.targets[this.currentTargetIndex]; // Huidige doel
+            this.minTargetDist = 2; // Minimale afstand tot het doelwit
+            this.targets = this.calculateTargets(); // Bereken doelwitten
+            this.currentTarget = this.targets[this.currentTargetIndex]; // Huidige doelwit
         }
 
-        // Methode om de doelposities te berekenen
         calculateTargets() {
-            let targets = []; // Array voor de doelen
-            let drawPos = new Vector(startPos.x, startPos.y); // Startpositie
+            let targets = [];
+            let drawPos = new Vector(startPos.x, startPos.y);
             for (let path of pathData) {
-                drawPos.x += path.x; // Voeg de x-verplaatsing toe
-                drawPos.y += path.y; // Voeg de y-verplaatsing toe
-                targets.push(new Vector(drawPos.x, drawPos.y)); // Voeg het doel toe aan de array
+                drawPos.x += path.x;
+                drawPos.y += path.y;
+                targets.push(new Vector(drawPos.x, drawPos.y));
             }
-            return targets; // Retourneer de array met doelen
+            return targets;
         }
 
-        // Methode om de leerling te updaten (bewegen)
         update() {
-            if (this.currentTarget == null) return; // Stop als er geen doel is
-            let dir = new Vector(this.currentTarget.x - this.pos.x, this.currentTarget.y - this.pos.y); // Richting naar het doel
-            let distance = Math.sqrt(dir.x ** 2 + dir.y ** 2); // Bereken de afstand tot het doel
-            if (distance < this.minTargetDist) { // Als de leerling dichtbij het doel is
-                this.currentTargetIndex++; // Ga naar het volgende doel
-                this.currentTarget = this.currentTargetIndex < this.targets.length ? this.targets[this.currentTargetIndex] : null; // Stel het nieuwe doel in
+            if (this.currentTarget == null) return true; // Stop als er geen doelwit is
+            let dir = new Vector(this.currentTarget.x - this.pos.x, this.currentTarget.y - this.pos.y);
+            let distance = Math.sqrt(dir.x ** 2 + dir.y ** 2);
+            if (distance < this.minTargetDist) {
+                this.currentTargetIndex++;
+                this.currentTarget = this.currentTargetIndex < this.targets.length ? this.targets[this.currentTargetIndex] : null;
             } else {
-                // Normaliseer de richting en verplaats de leerling
                 dir.x /= distance;
                 dir.y /= distance;
-                this.pos.x += dir.x * this.speed; // Verplaats in de x-richting
-                this.pos.y += dir.y * this.speed; // Verplaats in de y-richting
+                this.pos.x += dir.x * this.speed;
+                this.pos.y += dir.y * this.speed;
             }
-            // Als de leerling het eindpunt bereikt, verminder de gezondheid van de vijand
-            if (this.pos.x >= pathEnd.x && this.pos.y >= pathEnd.y) {
-                enemyHealth -= this.attack; // Verminder vijandelijke gezondheid
-                this.health = 10; // Reset de gezondheid van de leerling
+
+            // Verminder gezondheid van de speler als het einde van het pad wordt bereikt
+            const reachThreshold = 10; // Drempelafstand voor het bereiken van het einde van het pad
+            if (Math.abs(this.pos.x - pathEnd.x) < reachThreshold && Math.abs(this.pos.y - pathEnd.y) < reachThreshold) {
+                playerHealth -= this.attack; // Verminder de gezondheid van de speler
+                this.health = 0; // Markeer de leerling als verslagen
             }
+            return this.health > 0; // Controleer of de leerling nog leeft
         }
 
-        // Methode om de leerling te renderen
         render() {
-            ctx.fillStyle = "blue"; // Kleur voor de leerling
+            ctx.drawImage(this.image, this.pos.x - this.r, this.pos.y - this.r, this.r * 2, this.r * 2);
+        }
+    }
+
+    class Projectile {
+        constructor(x, y, target, damage) {
+            this.x = x;
+            this.y = y;
+            this.target = target;
+            this.damage = damage;
+            this.speed = 5; // Snelheid van het projectiel
+        }
+
+        update() {
+            let dir = new Vector(this.target.pos.x - this.x, this.target.pos.y - this.y);
+            let distance = Math.sqrt(dir.x ** 2 + dir.y ** 2);
+            if (distance < 5) {
+                this.target.health -= this.damage; // Verminder gezondheid van het doelwit
+                return false; // Verwijder projectiel
+            }
+            dir.x /= distance;
+            dir.y /= distance;
+            this.x += dir.x * this.speed;
+            this.y += dir.y * this.speed;
+            return true; // Houd projectiel actief
+        }
+
+        render() {
+            ctx.fillStyle = "orange";
             ctx.beginPath();
-            ctx.arc(this.pos.x, this.pos.y, this.r, 0, Math.PI * 2); // Teken een cirkel voor de leerling
-            ctx.fill(); // Vul de cirkel
+            ctx.arc(this.x, this.y, 5, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+
+    class Tower {
+        constructor(x, y) {
+            this.x = x;
+            this.y = y;
+            this.radius = 20;
+            this.range = 150;
+            this.attackDamage = 10;
+            this.projectiles = [];
+            this.cooldown = 1000; // Herlaadtijd in milliseconden (1 seconde)
+            this.lastShotTime = 0; // Tijd van de laatste schot
+        }
+
+        draw() {
+            ctx.fillStyle = 'red';
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Update en render projectielen
+            this.projectiles.forEach((p, index) => {
+                if (!p.update()) {
+                    this.projectiles.splice(index, 1);
+                }
+            });
+            this.projectiles.forEach(p => p.render());
+        }
+
+        shoot(target) {
+            const projectile = new Projectile(this.x, this.y, target, this.attackDamage);
+            this.projectiles.push(projectile);
+        }
+
+        update() {
+            let target = null;
+            for (let leerling of leerlingen) {
+                let dx = leerling.pos.x - this.x;
+                let dy = leerling.pos.y - this.y;
+                let distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance <= this.range && leerling.health > 0) { // Controleer of het doelwit leeft
+                    target = leerling;
+                    break;
+                }
+            }
+
+            const currentTime = Date.now();
+            if (target && (currentTime - this.lastShotTime >= this.cooldown)) {
+                this.shoot(target);
+                this.lastShotTime = currentTime; // Reset de tijd van de laatste schot
+            }
         }
     }
 
     // Startpositie van de leerlingen
-    var startPos = new Vector(0, 625); 
-    // Array met verplaatsingen voor het pad
+    var startPos = new Vector(0, 625);
     var pathData = [
-        new Vector(400, 0),
-        new Vector(0, -200),
-        new Vector(100, 0),
-        new Vector(0, -100),
-        new Vector(200, 0),
-        new Vector(0, 100),
-        new Vector(200, 0),
-        new Vector(0, -300),
-        new Vector(200, 0),
-        new Vector(0, 600),
-        new Vector(200, 0),
-        new Vector(0, -300),
-        new Vector(300, 0),
-        new Vector(0, -200),
-        new Vector(300, 0),
+        new Vector(300, 0),    // Beweeg naar rechts
+        new Vector(0, -200),   // Beweeg omhoog
+        new Vector(100, 0),    // Beweeg naar rechts
+        new Vector(0, -100),   // Beweeg omhoog
+        new Vector(200, 0),    // Beweeg naar rechts
+        new Vector(0, 100),    // Beweeg naar beneden
+        new Vector(200, 0),    // Beweeg naar rechts
+        new Vector(0, -300),   // Beweeg omhoog
+        new Vector(200, 0),    // Beweeg naar rechts
+        new Vector(0, 600),    // Beweeg naar beneden
+        new Vector(200, 0),    // Beweeg naar rechts
+        new Vector(0, -300),   // Beweeg omhoog
+        new Vector(200, 0),    // Beweeg naar rechts 
+        new Vector(0, -300),   // Beweeg omhoog 
+        new Vector(200, 0),    // Beweeg naar rechts 
+        new Vector(0, 600),    // Beweeg naar beneden
+        new Vector(300, 0),    // Beweeg naar rechts 
     ];
 
-    let leerlingen = []; // Array voor leerlingen
-    const NUM_leerlingen = 10; // Aantal te spawnen leerlingen
-    let enemyHealth = 100; // Gezondheid van de vijand
+    let leerlingen = [];
+    const NUM_LEERLINGEN = 10; // Totaal aantal leerlingen om te spawnen
+    const SPAWN_INTERVAL = 2000; // Interval voor spawnen in milliseconden (2 seconden)
+    const WAVE_INTERVAL = 100; // Interval tussen golven in milliseconden
+    let playerHealth = 100; // Gezondheid van de speler
+    let towers = []; // Array voor torens
+    let waveActive = false; // Vlag om bij te houden of een golf actief is
 
-    // Methode om leerlingen te spawnen
-    function spawnLeerlingen() {
-        for (let i = 0; i < NUM_leerlingen; i++) {
-            setTimeout(() => {
-                let newLeerling = new Leerling(new Vector(startPos.x, startPos.y), 30, 100, 5); // Maak een nieuwe leerling
-                leerlingen.push(newLeerling); // Voeg de leerling toe aan de array
-            }, i * 1000); // Tijd tussen spawnen
-        }
-    }
+    let currentSpawnIndex = 0; // Houdt bij welke leerling we momenteel spawnen
 
-    spawnLeerlingen(); // Roep de spawnfunctie aan
-
-    // Update functie voor het spel
-    function update() {
-        leerlingen.forEach(l => l.update()); // Update alle leerlingen
-    }
-
-    // Functie om de eindpositie van het pad te berekenen
-    function calculatePathEnd() {
-        let endPos = new Vector(startPos.x, startPos.y); // Start met de startpositie
-        for (let path of pathData) {
-            endPos.x += path.x; // Voeg de x-verplaatsing toe
-            endPos.y += path.y; // Voeg de y-verplaatsing toe
-        }
-        return endPos; // Retourneer de eindpositie
-    }
-
-    const pathEnd = calculatePathEnd(); // Bereken de eindpositie van het pad
-
-    // Functie om het pad te renderen
-    function renderPath() {
-        let drawPos = new Vector(startPos.x, startPos.y); // Begin bij de startpositie
-        ctx.fillStyle = "brown"; // Kleur voor het pad
-        pathData.forEach((path) => {
-            let x = drawPos.x; // Huidige x-positie
-            let y = drawPos.y; // Huidige y-positie
-            let w = Math.abs(path.x); // Breedte van de rechthoek
-            let h = Math.abs(path.y); // Hoogte van de rechthoek
-            if (path.x !== 0) { // Als er een horizontale verplaatsing is
-                ctx.fillRect(x, y - tile, w, tile * 2); // Teken de rechthoek
-            } else { // Als er een verticale verplaatsing is
-                ctx.fillRect(x - tile, y + (path.y > 0 ? 0 : path.y), tile * 2, h); // Teken de rechthoek
+    function spawnLeerling() {
+        if (currentSpawnIndex < NUM_LEERLINGEN) {
+            // Kies een leerling afbeelding op basis van de huidige index
+            let leerlingImage;
+            if (currentSpawnIndex % 5 === 0) {
+                leerlingImage = tijnImg; // Tijn
+            } else if (currentSpawnIndex % 5 === 1) {
+                leerlingImage = alemImg; // Alem
+            } else if (currentSpawnIndex % 5 === 2) {
+                leerlingImage = milanImg; // Milan
+            } else if (currentSpawnIndex % 5 === 3) {
+                leerlingImage = straImg; // Stra
+            } else if (currentSpawnIndex % 5 === 4) {
+                leerlingImage = ivoImg; // Ivo
             }
-            ctx.fillRect(x - tile, y - tile, tile * 2, tile * 2); // Teken een tegel op het kruispunt
-            drawPos.x += path.x; // Werk de huidige positie bij
-            drawPos.y += path.y; // Werk de huidige positie bij
-        });
-    }
 
-    // Functie om de grid te renderen
-    function renderGrid() {
-        ctx.fillStyle = "black"; // Kleur voor de gridlijnen
-        ctx.font = "50px Arial"; // Lettertype voor tekst
-        ctx.fillText("Wave 1", 1700, 50); // Weergave van de tekst "Wave 1"
-        let x = 0; // Begin x-positie
-        for (let i = 0; i < sw / tile; i++) {
-            ctx.beginPath();
-            ctx.moveTo(x, 0); // Startlijn
-            ctx.lineTo(x, sh); // Eindlijn
-            ctx.stroke(); // Teken de lijn
-            x += tile; // Werk de x-positie bij
-        }
-        let y = 0; // Begin y-positie
-        for (let i = 0; i < sh / tile; i++) {
-            ctx.beginPath();
-            ctx.moveTo(0, y); // Startlijn
-            ctx.lineTo(sw, y); // Eindlijn
-            ctx.stroke(); // Teken de lijn
-            y += tile; // Werk de y-positie bij
+            // Maak een nieuwe leerling aan
+            let leerling = new Leerling(new Vector(startPos.x, startPos.y), 60, 30, 5, leerlingImage);
+            leerlingen.push(leerling);
+            currentSpawnIndex++; // Verhoog het spawn-aantal
         }
     }
 
-    // Functie om het spel te renderen
-    function render() {
-        ctx.fillStyle = bgcolor; // Stel de achtergrondkleur in
-        ctx.fillRect(0, 0, sw, sh); // Vul het canvas
-        renderPath(); // Render het pad
-        renderGrid(); // Render de grid
-        drawTowers(); // Render de torens
-        leerlingen.forEach(l => l.render()); // Render alle leerlingen
-        document.getElementById("health").value = enemyHealth; // Update de gezondheid van de vijand in de interface
-        if (enemyHealth < 1) { // Controleer of de vijand gedood is
-            window.location.href = 'level1.html'; // Ga naar de volgende level
+    // Dynamisch berekenen van de eindpositie van het pad
+    var pathEnd = calculatePathEnd();
+
+    function calculatePathEnd() {
+        let drawPos = new Vector(startPos.x, startPos.y);
+        for (let path of pathData) {
+            drawPos.x += path.x;
+            drawPos.y += path.y;
         }
+        return drawPos; // Geef de eindpositie terug
     }
 
-    // Functie om het spel te laten draaien
-    function play() {
-        update(); // Update het spel
-        render(); // Render het spel
-    }
-
-    // Start de spelsnelheid
-    setInterval(play, 1000 / 60); // 60 FPS
-
-    const towers = []; // Array voor torens
-    let selectedTower = null; // Huidige geselecteerde toren
-
-    // Toren klasse
-    class Tower {
-        constructor(x, y) {
-            this.x = x; // x-positie van de toren
-            this.y = y; // y-positie van de toren
-            this.radius = 20; // Straal van de toren
-        }
-
-        // Methode om de toren te tekenen
-        draw() {
-            ctx.fillStyle = 'red'; // Kleur voor de toren
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); // Teken een cirkel voor de toren
-            ctx.fill(); // Vul de cirkel
-        }
-    }
-
-    // Functie om een toren te plaatsen
+    // Methode om een toren te plaatsen
+    let towerPlacementActive = false; // Toggle voor torenplaatsing
     function placeTower(x, y) {
-        if (selectedTower) { // Als er een toren is geselecteerd
-            towers.push(new Tower(x, y)); // Voeg de toren toe aan de array
-            drawTowers(); // Teken de torens
-            selectedTower = null; // Reset de geselecteerde toren
-            document.getElementById('tower1').classList.remove('selected'); // Verwijder de selectie uit de interface
+        if (!towerPlacementActive) return; // Niet plaatsen als niet actief
+        if (x < 0 || x > sw || y < 0 || y > sh) return; // Zorg ervoor dat de toren binnen het canvas blijft
+        let tower = new Tower(x, y);
+        towers.push(tower);
+        towerPlacementActive = true; // Zet de torenplaatsing inactief
+    }
+
+    // Rastertekenmethode
+    function drawGrid() {
+        ctx.strokeStyle = "lightgray";
+        ctx.lineWidth = 0.5;
+
+        for (let x = 0; x < sw; x += tile) {
+            ctx.beginPath();
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, sh);
+            ctx.stroke();
+        }
+
+        for (let y = 0; y < sh; y += tile) {
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            ctx.lineTo(sw, y);
+            ctx.stroke();
         }
     }
 
-    // Functie om alle torens te tekenen
-    function drawTowers() {
-        towers.forEach(tower => tower.draw()); // Teken elke toren
+    // Padtekenmethode
+    function drawPath() {
+        ctx.strokeStyle = "brown";
+        ctx.lineWidth = 50;
+        ctx.beginPath();
+        ctx.moveTo(startPos.x, startPos.y);
+        let drawPos = new Vector(startPos.x, startPos.y);
+        for (let path of pathData) {
+            drawPos.x += path.x;
+            drawPos.y += path.y;
+            ctx.lineTo(drawPos.x, drawPos.y);
+        }
+        ctx.stroke();
     }
 
-    // Event listener voor het klikken op het canvas
+    // Gezondheidsbalk tekenen
+    function drawHealthBar() {
+        const healthBar = document.getElementById('health');
+        healthBar.value = playerHealth; // Update de waarde van de gezondheidsbalk
+        healthBar.style.bottom = `${(100 - playerHealth)}%`; // Verander de positie van de gezondheidsbalk
+    }
+
+    // Hoofdupdate-lus
+    function update() {
+        ctx.clearRect(0, 0, sw, sh);
+        ctx.fillStyle = bgcolor;
+        ctx.fillRect(0, 0, sw, sh);
+
+        drawGrid();
+        drawPath();
+        drawHealthBar(); // Teken de gezondheidbalk
+        towers.forEach(tower => tower.update());
+        towers.forEach(tower => tower.draw());
+
+        // Loop over leerlingen van achteren naar voren
+        for (let i = leerlingen.length - 1; i >= 0; i--) {
+            if (!leerlingen[i].update()) {
+                leerlingen.splice(i, 1); // Verwijder leerling als deze dood is
+            } else {
+                leerlingen[i].render();
+            }
+        }
+
+        // Einde van het spel als de gezondheid van de speler nul of minder is
+        if (playerHealth <= 0) {
+            playerHealth = 100; // Reset de gezondheid van de speler
+            leerlingen = []; // Reset leerlingen
+            currentSpawnIndex = 0; // Reset het spawn-aantal
+            return; // Stop de update loop om niet verder te gaan
+        }
+
+        // Check of we alle leerlingen hebben verslagen
+        if (currentSpawnIndex >= NUM_LEERLINGEN && leerlingen.length === 0 && !waveActive) {
+            waveActive = true; // Markeer dat de golf actief is
+            currentSpawnIndex = 0; // Reset het spawn-aantal voor de nieuwe golf
+            setTimeout(() => {
+                waveActive = false; // Reset de golf-actief vlag
+            }, WAVE_INTERVAL);
+        }
+
+        requestAnimationFrame(update); // Vraag de volgende frame aan
+    }
+
+    // Voeg een klik-gebeurtenislistener toe voor het plaatsen van torens
     canvas.addEventListener('click', function(event) {
-        if (selectedTower) { // Als er een toren is geselecteerd
-            const rect = canvas.getBoundingClientRect(); // Verkrijg de positie van het canvas
-            const mouseX = event.clientX - rect.left; // Verkrijg de muis x-positie
-            const mouseY = event.clientY - rect.top; // Verkrijg de muis y-positie
-            placeTower(mouseX, mouseY); // Plaats de toren
+        const rect = canvas.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+
+        placeTower(x, y);
+    });
+
+    // Voeg een klik-gebeurtenislistener toe voor de torenicon
+    const towerIcon = document.getElementById('tower1');
+    towerIcon.addEventListener('click', function() {
+        towerPlacementActive = !towerPlacementActive; // Toggle de torenplaatsing
+        towerIcon.classList.toggle('selected'); // Visuele indicatie
+    });
+
+    // Start de spawn interval voor leerlingen
+    const spawnInterval = setInterval(() => {
+        if (currentSpawnIndex < NUM_LEERLINGEN) {
+            spawnLeerling(); // Spawn een leerling
         }
-    });
-
-    // Event listener voor het selecteren van de toren
-    document.getElementById('tower1').addEventListener('click', function() {
-        selectedTower = 'basicTower'; // Selecteer de basis toren
-        document.getElementById('tower1').classList.add('selected'); // Markeer de geselecteerde toren
-    });
+    }, SPAWN_INTERVAL); // Spawn elke 2 seconden
 });
-
-
-

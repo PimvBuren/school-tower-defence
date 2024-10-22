@@ -1,42 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Place a Tower</title>
- 
-<link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
- 
-<style>
-    canvas {
-        border: 1px solid black;
-    }
-    #ui {
-        margin-top: 10px;
-    }
-    .tower-icon {
-        
-        width: 70px;
-        height: 70px;
-       display: inline-block;
-        cursor: pointer;
-    }
-    .tower-icon.selected {
-        border-color: red;
-    }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Place a Tower</title>
+    <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        canvas {
+            border: 1px solid black;
+            display: block;
+            margin: auto; /* Center the canvas */
+        }
+        #ui {
+            margin-top: 10px;
+        }
+        .tower-icon {
+            width: 70px;
+            height: 70px;
+            display: inline-block;
+            cursor: pointer;
+        }
+        .tower-icon.selected {
+            border-color: red;
+        }
+    </style>
 </head>
 <body>
-<canvas id="myCanvas" width="1900" height="800"></canvas>
- 
-
-    <h1>health</h1>
+    <canvas id="myCanvas"></canvas>
+    <h1>Health</h1>
     <progress value="100" max="100" id="health"></progress>
     <div id="tower1" class="tower-icon"><img src="img/css.jpg"></div>
-
- 
- 
- 
 </body>
 <script src="script.js"></script>
 </html>

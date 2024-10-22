@@ -3,13 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Game Level Menu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Keyframe for background gradient animation */
+        @keyframes gradient-animation {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+ 
+        /* Keyframe for moving background image */
+        @keyframes moveBg {
+            from { transform: scale(1.1) translateX(0); }
+            to { transform: scale(1.1) translateX(-100px); }
+        }
+ 
+        /* Gradient animation applied to body background */
+        body {
+            background: linear-gradient(90deg, white, green, brown);
+            background-size: 200% 200%;
+            animation: gradient-animation 5s ease infinite;
+        }
+    </style>
 </head>
-<body>
-    <ul>
-        <li><a href="game1(level1)/level1.html">level 1</a></li>
-        <li><a href="">level 2</a></li>
-        <li><a href="startspage.html">exit</a></li>
-    </ul>  
+<body class="h-screen w-screen overflow-hidden bg-black">
+ 
+    <!-- Moving Background Image -->
+    <div class="absolute inset-0 bg-cover bg-center opacity-50 animate-[moveBg_10s_linear_infinite]"
+         style="background-image: url('https://example.com/your-background-image.jpg');">
+    </div>
+ 
+    <!-- Game Logo (Smaller Image) -->
+    <div class="relative z-10 flex items-center justify-center h-1/3">
+        <img src="game1(level1)/img/image.png" alt="School Tower Defender Logo" class="w-64 h-auto"> <!-- Logo remains -->
+    </div>
+ 
+    <!-- Menu with navigation buttons -->
+    <div class="relative z-10 flex flex-col items-center space-y-4 mt-8">
+        <a href="game1(level1)/level1.html" class="w-56 text-center text-xl text-white py-3 border-2 border-white bg-black/50 hover:bg-cyan-500 hover:border-cyan-500 hover:scale-105 transition duration-300">
+            Level 1
+        </a>
+        <a href="game2.html" class="w-56 text-center text-xl text-white py-3 border-2 border-white bg-black/50 hover:bg-cyan-500 hover:border-cyan-500 hover:scale-105 transition duration-300">
+            Level 2
+        </a>
+        <a href="startspage.html" class="w-56 text-center text-xl text-white py-3 border-2 border-white bg-black/50 hover:bg-cyan-500 hover:border-cyan-500 hover:scale-105 transition duration-300">
+            Exit
+        </a>
+    </div>
+ 
+    <!-- Footer -->
+    <div class="relative z-10 flex justify-center absolute bottom-5 w-full">
+        <p class="text-white text-sm">&copy; STD</p>
+    </div>
+ 
 </body>
-</html>
+</html>>

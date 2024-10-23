@@ -32,7 +32,6 @@
        
         .progress-container {
             border: 2px solid black; 
-          
             width: 200px; 
             height: 20px; 
             margin-top: 5px; 
@@ -63,12 +62,18 @@ canvas {
 <body>
     <canvas id="myCanvas"></canvas>
     <div id="ui">
-        <h1>Health</h1>
+
+        <br>
         <div class="progress-container">
             <progress value="100" max="100" id="health"></progress>
         </div>
         <div id="tower1" class="tower-icon">
             <img src="img/css.jpg" alt="Tower Icon">
+            <span id="antonPrice" style="color: white;">20</span>
+        </div>
+        <div id="tower2" class="tower-icon">
+            <img src="img/quincy.png" alt="Tower Icon">
+            <span id="quincyPrice" style="color: white;">40</span>
         </div>
     </div>
 

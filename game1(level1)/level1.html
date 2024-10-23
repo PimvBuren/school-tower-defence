@@ -6,13 +6,22 @@
     <title>Place a Tower</title>
     <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
     <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
         canvas {
             border: 1px solid black;
             display: block;
-            margin: auto; /* Center the canvas */
         }
         #ui {
-            margin-top: 10px;
+            position: absolute;
+            top: 30px; 
+            left: 10px; 
+            z-index: 10; 
         }
         .tower-icon {
             width: 70px;
@@ -20,16 +29,51 @@
             display: inline-block;
             cursor: pointer;
         }
-        .tower-icon.selected {
-            border-color: red;
+       
+        .progress-container {
+            border: 2px solid black; 
+          
+            width: 200px; 
+            height: 20px; 
+            margin-top: 5px; 
+            overflow: hidden;
         }
+        #health {
+            width: 100%;
+            height: 100%;
+        }
+
+        html, body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden; 
+    width: 100%;
+    height: 100%;
+}
+
+canvas {
+    display: block; 
+    width: 100vw;   
+    height: 100vh;  
+}
+     
+        
     </style>
 </head>
 <body>
     <canvas id="myCanvas"></canvas>
-    <h1>Health</h1>
-    <progress value="100" max="100" id="health"></progress>
-    <div id="tower1" class="tower-icon"><img src="img/css.jpg"></div>
+    <div id="ui">
+        <h1>Health</h1>
+        <div class="progress-container">
+            <progress value="100" max="100" id="health"></progress>
+        </div>
+        <div id="tower1" class="tower-icon">
+            <img src="img/css.jpg" alt="Tower Icon">
+        </div>
+    </div>
+
+
+   
 </body>
 <script src="script.js"></script>
 </html>
